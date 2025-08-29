@@ -18,9 +18,9 @@ grep ATOM protein.pdb > Protein.pdb
 
 Generate Protein Topology: Use gmx pdb2gmx to create a processed protein structure and a topology file. 
 
-''' bash
+```bash
 gmx pdb2gmx -f protein.pdb -o protein.gro -water tip4p -ignh
-'''
+```
 Select option 8 (Charmm36) for protein-ligand simulation 
 
 
@@ -60,7 +60,9 @@ UNK 1
 
 Add Position Restraints for Ligand: Create a position restraints file for the ligand to keep it from moving during the early stages of the simulation. 
 
-'gmx genrestr -f drg.gro -o posre_drg.itp -fc 1000 1000 1000'
+```bash
+gmx genrestr -f drg.gro -o posre_drg.itp -fc 1000 1000 1000
+```
 
 Select 2 for UNK 
 
@@ -70,8 +72,9 @@ In your topo.top file, add this line after including drg.itp:
 #include "posre_drg.itp"
 
 Merge Protein and Ligand Indices: Create an index file that merges the protein and ligand groups. 
-
-'gmx make_ndx -f em.gro -o index.ndx'
+```bash
+gmx make_ndx -f em.gro -o index.ndx
+```
 Select '1 | 13' to merge Protein and UNK (ligand). 
 Type 'q' and press Enter to exit. 
 
@@ -81,39 +84,57 @@ Continue with Standard MD Steps as present in the protein format.
 
 # Analysis Steps 📊
 
-    Center and Remove PBC: Use gmx trjconv to clean the trajectory. 
-'gmx trjconv -f md.xtc -s md.tpr -center -pbc nojump -o nopbc.xtc'
+Center and Remove PBC: Use gmx trjconv to clean the trajectory.
+```bash
+gmx trjconv -f md.xtc -s md.tpr -center -pbc nojump -o nopbc.xtc
+```
 Select group 22 (Protein_UNK) and 0 (System) 
 
 Calculate RMSD: Compute the RMSD for the complex. 
-'gmx rms -f nopbc.xtc -s md.tpr -o rmsd.xvg -n index.ndx -tu ns'
+```bash
+gmx rms -f nopbc.xtc -s md.tpr -o rmsd.xvg -n index.ndx -tu ns
+```
 
 Select group 22 (Protein_UNK) twice / or backbone 
 
 Calculate RMSF: Measure the fluctuations of the complex. 
-'gmx rmsf -f nopbc.xtc -s md.tpr -o rmsf.xvg -n index.ndx -res'
+```bash
+gmx rmsf -f nopbc.xtc -s md.tpr -o rmsf.xvg -n index.ndx -res
+```
 Select group 22 (Protein_UNK) 
 
 Calculate Radius of Gyration: Check the compactness of the complex. 
-'gmx gyrate -f nopbc.xtc -s md.tpr -o gyrate.xvg -n index.ndx'
+```bash
+gmx gyrate -f nopbc.xtc -s md.tpr -o gyrate.xvg -n index.ndx
+```
 Select group 22 (Protein_UNK) 
 
 Analyze Hydrogen Bonds: Analyze the number of hydrogen bonds between the protein and the ligand over time. 
-'gmx hbond -f nopbc.xtc -s md.tpr -dist distance.xvg -ac bac.xvg -life hblife.xvg -hbn hbd.xvg  -num hbond.xvg -n index.ndx -tu ns'
-Select group 1 (Protein) and 13 (UNK) 
+```bash
+gmx hbond -f nopbc.xtc -s md.tpr -dist distance.xvg -ac bac.xvg -life hblife.xvg -hbn hbd.xvg  -num hbond.xvg -n index.ndx -tu ns
+```
+Select group 1 (Protein) and 13 (UNK)
 
 Calculate SASA: Determine the Solvent Accessible Surface Area of the complex. 
-'gmx sasa -f nopbc.xtc -s md.tpr -o sasa.xvg -n index.ndx -tu ns'
+```bash
+gmx sasa -f nopbc.xtc -s md.tpr -o sasa.xvg -n index.ndx -tu ns
+```
 Select group 22 (Protein_UNK) 
 
 PCA Analysis: Perform PCA on the protein-ligand complex to identify primary motions. 
-'gmx covar -f nopbc.xtc -s md.tpr -o eigenval.xvg -v eigenvec.trr -xpma covara.xpm -l covar.log -n index.ndx'
+```bash
+gmx covar -f nopbc.xtc -s md.tpr -o eigenval.xvg -v eigenvec.trr -xpma covara.xpm -l covar.log -n index.ndx
+```
 
 Select group 22 (Protein_UNK)
-'gmx anaeig -f nopbc.xtc -s md.tpr -first 1 -last 2 -2d pca.xvg -n index.ndx'
+```bash
+gmx anaeig -f nopbc.xtc -s md.tpr -first 1 -last 2 -2d pca.xvg -n index.ndx
+```
 Select group 22 (Protein_UNK)
 
 Potential Energy: Analyze the potential energy of the complex to ensure stability. 
-'gmx energy -f md.edr -s md.tpr -o potential.xvg'
+```bash
+gmx energy -f md.edr -s md.tpr -o potential.xvg
+```
 Select 11 (Potential energy) 
 
