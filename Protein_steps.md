@@ -16,7 +16,7 @@ Simulation Steps 🏃
     .gro), a topology file (.top), and a position restraints file (.itp). 
 
 ```Bash
-gmx pdb2gmx -f protein.pdb -o protein.gro -water spce -ignh
+gmx pdb2gmx -f protein.pdb -o protein.gro -water tip4p -ignh
 ```
 Select option 9 for protein simulation 
 
@@ -31,7 +31,7 @@ Add Solvent: Fill the box with water molecules using gmx solvate.
 ```
 Bash
 
-gmx solvate -cp protein_newbox.gro -cs spc216.gro -o solv.gro -p topol.top
+gmx solvate -cp protein_newbox.gro -cs tip4p.gro -o solv.gro -p topol.top
 ```
 
 Add Ions: Add ions to neutralize the system. First, download 
@@ -45,7 +45,7 @@ Bash
 gmx grompp -f ions.mdp -c solv.gro -p topol.top -o ions.tpr
 gmx genion -s ions.tpr -o solv_ions.gro -p topol.top -pname NA -nname CL -neutral
 ```
-# Select solvent to replace with ions [cite: 37]
+Select solvent to replace with ions [cite: 37]
 
 Energy Minimization: Minimize the system's potential energy to resolve any clashes between atoms. Download 
 
@@ -97,7 +97,7 @@ Analysis Steps 📊
 ```
 Bash
 
-gmx trjconv -f md_0_1.xtc -s md_0_1.tpr -pbc mol -ur compact -center -o nopbc.xtc
+gmx trjconv -f md.xtc -s md.tpr -pbc mol -ur compact -center -o nopbc.xtc
 ```
 Select group 1 (Protein) and 0 (System) 
 
@@ -105,7 +105,7 @@ Calculate RMSD: Compute the Root Mean Square Deviation to assess the protein's s
 ```
 Bash
 
-gmx rms -f nopbc.xtc -s md_0_1.tpr -o native_rmsd.xvg -tu ns
+gmx rms -f nopbc.xtc -s md.tpr -o native_rmsd.xvg -tu ns
 ```
 Select group 4 (backbone) 
 
@@ -113,7 +113,7 @@ Calculate RMSF: Analyze the Root Mean Square Fluctuation to identify flexible re
 ```
 Bash
 
-gmx rmsf -f nopbc.xtc -s md_0_1.tpr -o native_rmsf.xvg -res
+gmx rmsf -f nopbc.xtc -s md.tpr -o native_rmsf.xvg -res
 ```
 Select group 1 (Protein) 
 
@@ -121,7 +121,7 @@ Calculate Radius of Gyration: Use gmx gyrate to measure the compactness of the p
 ```
 Bash
 
-gmx gyrate -f nopbc.xtc -s md_0_1.tpr -o native_gyrate.xvg
+gmx gyrate -f nopbc.xtc -s md.tpr -o native_gyrate.xvg
 ```
 Select group 1 (Protein) 
 
@@ -129,7 +129,7 @@ Calculate SASA: Determine the Solvent Accessible Surface Area (SASA) to see how 
 ```
 Bash
 
-gmx sasa -f nopbc.xtc -s md_0_1.tpr -o native_sasa.xvg -tu ns
+gmx sasa -f nopbc.xtc -s md.tpr -o native_sasa.xvg -tu ns
 ```
 Select Type: 1 
 
@@ -137,8 +137,8 @@ PCA Analysis: Perform Principal Component Analysis to identify the most signific
 ```
 Bash
 
-gmx covar -f nopbc.xtc -s md_0_1.tpr -o eigenval.xvg -v eigenvec.trr -xpma covar.xpm
-gmx anaeig -f nopbc.xtc -s md_0_1.tpr -first 1 -last 2 -2d pca-native.xvg
+gmx covar -f nopbc.xtc -s md.tpr -o eigenval.xvg -v eigenvec.trr -xpma covar.xpm
+gmx anaeig -f nopbc.xtc -s md.tpr -first 1 -last 2 -2d pca-native.xvg
 ```
 Select group 1 (Protein) for both commands 
 
@@ -146,7 +146,7 @@ Potential Energy: Analyze the potential energy of the system to ensure stability
 ```
 Bash
 
-gmx energy -f md_0_1.edr -s md_0_1.tpr -o potential.xvg
+gmx energy -f md.edr -s md.tpr -o potential.xvg
 ```
 Select 11 (Potential energy) 
 
@@ -154,7 +154,7 @@ Create Movie File: Generate a PDB movie file from the trajectory.
 ```
 Bash
 
-gmx_mpi trjconv -f nopbc.xtc -s md_0_1.tpr -o movie.pdb -dt 500
+gmx trjconv -f nopbc.xtc -s md.tpr -o movie.pdb -dt 500
 ```
 select protein 
 
