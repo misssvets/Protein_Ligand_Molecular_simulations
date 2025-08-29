@@ -1,4 +1,4 @@
-2. MD Simulation and Analysis for Protein-Ligand Complexes
+# MD Simulation and Analysis for Protein-Ligand Complexes
 
 This protocol covers the essential steps for setting up and analyzing a molecular dynamics simulation of a protein bound to a ligand.
 
@@ -80,44 +80,44 @@ Analysis Steps 📊
 
     Center and Remove PBC: Use gmx trjconv to clean the trajectory. 
 
-gmx trjconv -f md_0_1.xtc -s md_0_1.tpr -center -pbc nojump -o nopbc.xtc
+gmx trjconv -f md.xtc -s md.tpr -center -pbc nojump -o nopbc.xtc
 # Select group 22 (Protein_UNK) and 0 (System) 
 
 Calculate RMSD: Compute the RMSD for the complex. 
 
-gmx rms -f nopbc.xtc -s md_0_1.tpr -o rmsd.xvg -n index.ndx -tu ns
+gmx rms -f nopbc.xtc -s md.tpr -o rmsd.xvg -n index.ndx -tu ns
 # Select group 22 (Protein_UNK) twice / or backbone 
 
 Calculate RMSF: Measure the fluctuations of the complex. 
 
-gmx rmsf -f nopbc.xtc -s md_0_1.tpr -o rmsf.xvg -n index.ndx -res
+gmx rmsf -f nopbc.xtc -s md.tpr -o rmsf.xvg -n index.ndx -res
 # Select group 22 (Protein_UNK) 
 
 Calculate Radius of Gyration: Check the compactness of the complex. 
 
-gmx gyrate -f nopbc.xtc -s md_0_1.tpr -o gyrate.xvg -n index.ndx
+gmx gyrate -f nopbc.xtc -s md.tpr -o gyrate.xvg -n index.ndx
 # Select group 22 (Protein_UNK) 
 
 Analyze Hydrogen Bonds: Analyze the number of hydrogen bonds between the protein and the ligand over time. 
 
-gmx hbond -f nopbc.xtc -s md_0_1.tpr -dist distance.xvg -ac bac.xvg -life  -num hbond.xvg -n index.ndx -tu ns
+gmx hbond -f nopbc.xtc -s md.tpr -dist distance.xvg -ac bac.xvg -life hblife.xvg -hbn hbd.xvg  -num hbond.xvg -n index.ndx -tu ns
 # Select group 1 (Protein) and 13 (UNK) 
 
 Calculate SASA: Determine the Solvent Accessible Surface Area of the complex. 
 
-gmx sasa -f nopbc.xtc -s md_0_1.tpr -o sasa.xvg -n index.ndx -tu ns
+gmx sasa -f nopbc.xtc -s md.tpr -o sasa.xvg -n index.ndx -tu ns
 # Select group 22 (Protein_UNK) 
 
 PCA Analysis: Perform PCA on the protein-ligand complex to identify primary motions. 
 
-gmx covar -f nopbc.xtc -s md_0_1.tpr -o eigenval.xvg -v eigenvec.trr -xpma covara.xpm -l covar.log -n index.ndx
+gmx covar -f nopbc.xtc -s md.tpr -o eigenval.xvg -v eigenvec.trr -xpma covara.xpm -l covar.log -n index.ndx
 # Select group 22 (Protein_UNK)
 
-gmx anaeig -f nopbc.xtc -s md_0_1.tpr -first 1 -last 2 -2d pca.xvg -n index.ndx
+gmx anaeig -f nopbc.xtc -s md.tpr -first 1 -last 2 -2d pca.xvg -n index.ndx
 # Select group 22 (Protein_UNK)
 
 Potential Energy: Analyze the potential energy of the complex to ensure stability. 
 
-gmx energy -f md_0_1.edr -s md_0_1.tpr -o potential.xvg
+gmx energy -f md.edr -s md.tpr -o potential.xvg
 # Select 11 (Potential energy) 
 
