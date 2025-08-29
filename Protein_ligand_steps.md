@@ -85,38 +85,39 @@ gmx trjconv -f md_0_1.xtc -s md_0_1.tpr -center -pbc nojump -o nopbc.xtc
 
 Calculate RMSD: Compute the RMSD for the complex. 
 
-gmx_mpi rms -f nopbc.xtc -s md_0_1.tpr -o rmsd.xvg -n index.ndx -tu ns
+gmx rms -f nopbc.xtc -s md_0_1.tpr -o rmsd.xvg -n index.ndx -tu ns
 # Select group 22 (Protein_UNK) twice / or backbone 
 
 Calculate RMSF: Measure the fluctuations of the complex. 
 
-gmx_mpi rmsf -f nopbc.xtc -s md_0_1.tpr -o rmsf.xvg -n index.ndx -res
+gmx rmsf -f nopbc.xtc -s md_0_1.tpr -o rmsf.xvg -n index.ndx -res
 # Select group 22 (Protein_UNK) 
 
 Calculate Radius of Gyration: Check the compactness of the complex. 
 
-gmx_mpi gyrate -f nopbc.xtc -s md_0_1.tpr -o gyrate.xvg -n index.ndx
+gmx gyrate -f nopbc.xtc -s md_0_1.tpr -o gyrate.xvg -n index.ndx
 # Select group 22 (Protein_UNK) 
 
 Analyze Hydrogen Bonds: Analyze the number of hydrogen bonds between the protein and the ligand over time. 
 
-gmx_mpi hbond -f nopbc.xtc -s md_0_1.tpr -num hbond.xvg -n index.ndx -tu ns
+gmx hbond -f nopbc.xtc -s md_0_1.tpr -dist distance.xvg -ac bac.xvg -life  -num hbond.xvg -n index.ndx -tu ns
 # Select group 1 (Protein) and 13 (UNK) 
 
 Calculate SASA: Determine the Solvent Accessible Surface Area of the complex. 
 
-gmx_mpi sasa -f nopbc.xtc -s md_0_1.tpr -o sasa.xvg -n index.ndx -tu ns
+gmx sasa -f nopbc.xtc -s md_0_1.tpr -o sasa.xvg -n index.ndx -tu ns
 # Select group 22 (Protein_UNK) 
 
 PCA Analysis: Perform PCA on the protein-ligand complex to identify primary motions. 
 
-gmx_mpi covar -f nopbc.xtc -s md_0_1.tpr -o eigenval.xvg -v eigenvec.trr -xpma covara.xpm -l covar.log -n index.ndx
-# Select group 22 (Protein_UNK) twice [cite: 12]
-gmx_mpi anaeig -f nopbc.xtc -s md_0_1.tpr -first 1 -last 2 -2d pca.xvg -n index.ndx
-# Select group 22 (Protein_UNK) twice [cite: 13]
+gmx covar -f nopbc.xtc -s md_0_1.tpr -o eigenval.xvg -v eigenvec.trr -xpma covara.xpm -l covar.log -n index.ndx
+# Select group 22 (Protein_UNK)
+
+gmx anaeig -f nopbc.xtc -s md_0_1.tpr -first 1 -last 2 -2d pca.xvg -n index.ndx
+# Select group 22 (Protein_UNK)
 
 Potential Energy: Analyze the potential energy of the complex to ensure stability. 
 
-gmx_mpi energy -f md_0_1.edr -s md_0_1.tpr -o potential.xvg
+gmx energy -f md_0_1.edr -s md_0_1.tpr -o potential.xvg
 # Select 11 (Potential energy) 
 
